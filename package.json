@@ -1,0 +1,10 @@
+{
+  "name": "deephq",
+  "private": true,
+  "dependencies": {
+    "@vercel/blob": "^2.8.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
