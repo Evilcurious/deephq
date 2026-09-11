@@ -3,11 +3,14 @@
 Static 3-page website (Home, Services, Order) for DEEP.HQ — AI digital marketing, social media management & Meta Ads.
 
 ## Deploy on Vercel
+This repo is connected to Vercel via GitHub. **Every push to `main` auto-deploys production**; other branches get preview URLs.
+
+First-time setup (if the project is not linked yet):
 1. Go to https://vercel.com/new and import this GitHub repository.
 2. Framework preset: **Other** (no build step). Leave build command and output directory empty.
 3. Click **Deploy**.
 
-`vercel.json` enables clean URLs (`/services`, `/order`) and long-term caching for assets.
+`vercel.json` enables Git auto-deploy, clean URLs (`/services`, `/order`) and long-term caching for assets.
 
 ## Local preview
 ```
