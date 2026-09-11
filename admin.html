@@ -43,6 +43,11 @@
         <div><a href="/" target="_blank" class="btn btn-outline btn-sm">View Site</a> <button class="btn btn-sm btn-danger" id="logout">Logout</button></div>
       </div>
 
+      <div class="panel" id="storageWarn" style="display:none;border-color:#f5b400;background:#fff8e1;">
+        <strong>Storage not connected — changes can't be saved yet.</strong>
+        <p style="color:var(--muted);margin-top:6px;font-size:.93rem;">In Vercel open your project → <b>Storage</b> tab → <b>Create Database</b> → choose <b>Blob</b> → <b>Connect</b> to this project → then <b>Redeploy</b>. Takes about 1 minute, no tokens needed.</p>
+      </div>
+
       <div class="panel">
         <h2>WhatsApp &amp; Currency</h2>
         <div class="form-row">
@@ -144,11 +149,8 @@
       try {
         const j = await api('GET');
         site = j.data;
-      } catch (e) {
-        // Fallback: read the deployed file (read-only) if the API isn't configured yet
-        site = await (await fetch('/data/site.json?v=' + Date.now())).json();
-        toast('API not configured: ' + e.message + ' (loaded read-only copy)');
-      }
+        $('#storageWarn').style.display = j.storage ? 'none' : 'block';
+      } catch (e) { toast('Load failed: ' + e.message); }
       render();
       $('#status').textContent = '';
     };
@@ -161,7 +163,7 @@
         load();
       } catch (e) {
         sessionStorage.removeItem('deephq_pw');
-        $('#loginErr').textContent = e.message === 'Unauthorized' ? 'Wrong password.' : 'Error: ' + e.message;
+        $('#loginErr').textContent = e.message;
       }
     }
 
@@ -182,7 +184,7 @@
       const data = collect();
       if (!data.whatsapp) return toast('WhatsApp number is required');
       $('#save').disabled = true; $('#status').textContent = 'Saving…';
-      try { const j = await api('POST', { data }); site = data; toast(j.message || 'Saved'); $('#status').textContent = 'Saved ✓ — live in ~1 minute after redeploy'; }
+      try { const j = await api('POST', { data }); site = data; toast(j.message || 'Saved'); $('#status').textContent = 'Saved ✓ — live now'; }
       catch (e) { toast('Save failed: ' + e.message); $('#status').textContent = ''; }
       $('#save').disabled = false;
     };

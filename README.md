@@ -15,23 +15,17 @@ python3 -m http.server 8000
 ```
 
 ## Admin panel
-Visit `/admin` to edit services (name, description, price), home-page stats and the WhatsApp number.
-Saving commits `data/site.json` to GitHub, which triggers a Vercel redeploy (~1 min).
+Visit `/admin` — password **evil123** (override with the `ADMIN_PASSWORD` env var if you want to change it).
+Edit services (name, description, price), home-page stats, WhatsApp number, and delete reviews.
 
-Set these **Environment Variables** in Vercel → Project → Settings → Environment Variables:
-
-| Variable | Value |
-|---|---|
-| `ADMIN_PASSWORD` | admin password (defaults to `evil123` if not set — change it in production) |
-| `GITHUB_TOKEN` | GitHub fine-grained token with *Contents: Read and write* on this repo |
-| `GITHUB_REPO` | `Evilcurious/deephq` |
-| `GITHUB_BRANCH` | branch Vercel deploys from (e.g. `main`) |
+Saved data is stored in **Vercel Blob**. One-time setup: Vercel project → **Storage** → **Create Database** → **Blob** → **Connect** → Redeploy.
+No tokens or database to manage. Until connected, the site serves the defaults in `data/*.json`.
 
 ## Orders
 The order form opens WhatsApp (number set in admin) with the order details pre-filled.
 
 ## Reviews
-`/reviews` — public page where anyone can post a review (saved to `data/reviews.json` via `/api/reviews`).
+`/reviews` — public page where anyone can post a review (stored in Vercel Blob via `/api/reviews`).
 Admins can delete reviews from `/admin`.
 
 ## Services → Order

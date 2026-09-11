@@ -7,8 +7,11 @@ const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&
 const fmtPrice = (site, s) => `${site.currency}${Number(s.price).toLocaleString()}` + (s.period === 'one-time' ? ' one-time' : `/${s.period}`);
 
 async function loadSite() {
-  const res = await fetch('/data/site.json?v=' + Date.now(), { cache: 'no-store' });
-  return res.json();
+  try {
+    const r = await fetch('/api/site', { cache: 'no-store' });
+    if (r.ok) return await r.json();
+  } catch {}
+  return (await fetch('/data/site.json?v=' + Date.now(), { cache: 'no-store' })).json();
 }
 
 function serviceCard(site, s, withPrice) {
