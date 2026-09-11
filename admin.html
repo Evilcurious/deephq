@@ -43,7 +43,7 @@
         <div><a href="/" target="_blank" class="btn btn-outline btn-sm">View Site</a> <button class="btn btn-sm btn-danger" id="logout">Logout</button></div>
       </div>
 
-      <p id="storageWarn" style="display:none;color:#b26a00;font-size:.9rem;margin:-8px 0 16px;">⚠ Storage not connected yet — saving is disabled. In Vercel: Storage → your Blob store → <b>Connect Project</b> → Redeploy.</p>
+      <p id="storageWarn" style="display:none;color:#b26a00;font-size:.9rem;margin:-8px 0 16px;">⚠ Storage not connected yet — saving is disabled. <span id="diag"></span></p>
 
       <div class="panel">
         <h2>WhatsApp &amp; Currency</h2>
@@ -147,6 +147,14 @@
         const j = await api('GET');
         site = j.data;
         $('#storageWarn').style.display = j.storage ? 'none' : 'block';
+        if (!j.storage && j.diag) {
+          const d = j.diag;
+          let hint = `This deployment is <b>${d.env}</b>` + (d.branch ? ` (branch <b>${d.branch}</b>)` : '') + `. `;
+          hint += d.tokenKeys.length ? `Found token var <b>${d.tokenKeys.join(', ')}</b> but it is empty/invalid.` :
+            d.env === 'preview' ? `The Blob store is not enabled for the <b>Preview</b> environment. In Vercel: Storage → your store → Connect Project → tick <b>Preview</b> (and Production) → then Redeploy. Or merge the PR so the site runs on Production.` :
+            `No <code>*_READ_WRITE_TOKEN</code> variable exists in this environment. In Vercel: Storage → your store → <b>Connect Project</b> → select deephq + all environments → Redeploy.`;
+          $('#diag').innerHTML = hint;
+        }
       } catch (e) { toast('Load failed: ' + e.message); }
       render();
       $('#status').textContent = '';
