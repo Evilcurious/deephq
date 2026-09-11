@@ -28,7 +28,7 @@
     <div class="container">
       <span class="eyebrow">Order</span>
       <h1>Start Growing Today</h1>
-      <p>Fill in the details below and our team will reach out within 24 hours with your free AI audit.</p>
+      <p>Fill in the details below and confirm — your order will be sent to us directly on WhatsApp.</p>
     </div>
   </section>
 
@@ -68,24 +68,8 @@
           </div>
 
           <div class="form-group">
-            <label for="plan">Choose a Plan *</label>
-            <select id="plan" name="plan" required>
-              <option value="starter" data-price="499">Starter — $499/mo</option>
-              <option value="growth" data-price="999" selected>Growth — $999/mo</option>
-              <option value="enterprise" data-price="1999">Enterprise — $1,999/mo</option>
-            </select>
-          </div>
-
-          <div class="form-group">
             <label>Services Needed *</label>
-            <div class="checks">
-              <label class="check"><input type="checkbox" name="services" value="Social Media Management" checked /> Social Media Management</label>
-              <label class="check"><input type="checkbox" name="services" value="Meta Ads Management" checked /> Meta Ads Management</label>
-              <label class="check"><input type="checkbox" name="services" value="AI Content Creation" /> AI Content Creation</label>
-              <label class="check"><input type="checkbox" name="services" value="Analytics & Reporting" /> Analytics &amp; Reporting</label>
-              <label class="check"><input type="checkbox" name="services" value="Growth Strategy" /> Growth Strategy</label>
-              <label class="check"><input type="checkbox" name="services" value="Branding & Creative" /> Branding &amp; Creative</label>
-            </div>
+            <div class="checks" id="serviceChecks"></div>
           </div>
 
           <div class="form-row">
@@ -109,24 +93,23 @@
             <textarea id="message" name="message" placeholder="e.g. Increase online sales, grow Instagram followers, launch a new product..."></textarea>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-block">Place Order →</button>
-          <p class="form-note">No payment required now. We'll confirm details and send an invoice after your free audit.</p>
+          <button type="submit" class="btn btn-primary btn-block">Confirm Order via WhatsApp →</button>
+          <p class="form-note">After confirming, you'll be redirected to WhatsApp with your order details pre-filled. No payment required now.</p>
         </form>
 
         <div class="success" id="successMsg">
           <div class="icon">✓</div>
           <h2>Order Received!</h2>
-          <p>Thank you, <strong id="successName"></strong>. We'll contact you at <strong id="successEmail"></strong> within 24 hours.</p>
-          <a href="/" class="btn btn-primary">Back to Home</a>
+          <p>Thank you, <strong id="successName"></strong>. WhatsApp should have opened with your order details. If it didn't, tap the button below.</p>
+          <a id="waLink" href="#" target="_blank" class="btn btn-primary">Open WhatsApp</a>
+          <a href="/" class="btn btn-outline" style="margin-left:8px;">Back to Home</a>
         </div>
       </div>
 
       <aside class="summary">
         <h3>Order Summary</h3>
-        <div class="summary-row"><span>Plan</span><span id="sumPlan">Growth</span></div>
-        <div class="summary-row"><span>Services</span><span id="sumServices">2 selected</span></div>
-        <div class="summary-row"><span>Billing</span><span>Monthly</span></div>
-        <div class="summary-total"><span>Total</span><strong id="sumTotal">$999/mo</strong></div>
+        <div id="sumList"></div>
+        <div class="summary-total"><span>Total</span><strong id="sumTotal">$0</strong></div>
         <ul>
           <li>Free AI account audit</li>
           <li>No setup fees</li>
@@ -157,7 +140,7 @@
           <h4>Contact</h4>
           <ul>
             <li>hello@deephq.agency</li>
-            <li>+1 (555) 123-4567</li>
+            <li><a data-wa="text" href="https://wa.me/923296976009" target="_blank">+923296976009</a> (WhatsApp)</li>
             <li>Mon–Fri, 9am–6pm</li>
           </ul>
         </div>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — DEEP.HQ</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/assets/logo.svg" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <style>
+    body { background: var(--blue-50); }
+    .admin { width: min(960px, 94%); margin: 40px auto; }
+    .panel { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 28px; margin-bottom: 22px; }
+    .panel h2 { color: var(--blue-900); font-size: 1.15rem; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+    .svc { border: 1.5px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 14px; background: var(--blue-50); }
+    .svc .form-row { grid-template-columns: 70px 1fr 120px 130px; }
+    .svc textarea { min-height: 70px; }
+    .row-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .btn-sm { padding: 8px 14px; font-size: .85rem; }
+    .btn-danger { background: #ffe5e5; color: #b00020; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--blue-900); color: #fff; padding: 12px 22px; border-radius: 999px; display: none; }
+    .toast.show { display: block; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+    #login { max-width: 420px; margin: 80px auto; }
+    #app { display: none; }
+    .save-bar { position: sticky; bottom: 0; background: #fff; border-top: 1px solid var(--border); padding: 16px 0; display: flex; gap: 10px; justify-content: flex-end; }
+  </style>
+</head>
+<body>
+  <div class="admin">
+    <div id="login" class="panel">
+      <a href="/" class="logo" style="margin-bottom:18px;"><img src="/assets/logo.svg" alt="" /> <span class="wm">DEEP<span class="dot">.</span><span class="hq">HQ</span></span></a>
+      <h2>Admin Login</h2>
+      <div class="form-group"><label>Password</label><input type="password" id="pw" placeholder="Admin password" /></div>
+      <button class="btn btn-primary btn-block" id="loginBtn">Login</button>
+      <p class="form-note" id="loginErr" style="color:#b00020;"></p>
+    </div>
+
+    <div id="app">
+      <div class="topbar">
+        <a href="/" class="logo"><img src="/assets/logo.svg" alt="" /> <span class="wm">DEEP<span class="dot">.</span><span class="hq">HQ</span></span> <span style="font-weight:500;color:var(--muted);margin-left:8px;">Admin</span></a>
+        <div><a href="/" target="_blank" class="btn btn-outline btn-sm">View Site</a> <button class="btn btn-sm btn-danger" id="logout">Logout</button></div>
+      </div>
+
+      <div class="panel">
+        <h2>WhatsApp &amp; Currency</h2>
+        <div class="form-row">
+          <div class="form-group"><label>WhatsApp number (country code, digits only)</label><input id="whatsapp" placeholder="923296976009" /></div>
+          <div class="form-group"><label>Currency symbol</label><input id="currency" placeholder="$" /></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Home Page Stats</h2>
+        <div class="form-row">
+          <div class="form-group"><label>Brands Managed</label><input id="st-brands" /></div>
+          <div class="form-group"><label>Ad Spend Optimized</label><input id="st-adSpend" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Average ROAS</label><input id="st-roas" /></div>
+          <div class="form-group"><label>AI Monitoring</label><input id="st-monitoring" /></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>Services <button class="btn btn-outline btn-sm" id="addSvc">+ Add Service</button></h2>
+        <div id="services"></div>
+      </div>
+
+      <div class="save-bar">
+        <span id="status" style="align-self:center;color:var(--muted);font-size:.9rem;margin-right:auto;"></span>
+        <button class="btn btn-outline" id="reload">Discard changes</button>
+        <button class="btn btn-primary" id="save">Save &amp; Publish</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    let site = null;
+    const pw = () => sessionStorage.getItem('deephq_pw') || '';
+    const toast = (m) => { const t = $('#toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); };
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+    async function api(method, body) {
+      const r = await fetch('/api/admin', { method, headers: { 'x-admin-password': pw(), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || r.statusText);
+      return j;
+    }
+
+    function render() {
+      $('#whatsapp').value = site.whatsapp || '';
+      $('#currency').value = site.currency || '$';
+      for (const k of ['brands','adSpend','roas','monitoring']) $('#st-' + k).value = site.stats?.[k] || '';
+      $('#services').innerHTML = site.services.map((s, i) => `
+        <div class="svc" data-i="${i}">
+          <div class="form-row">
+            <div class="form-group"><label>Icon</label><input class="f-icon" value="${esc(s.icon)}" /></div>
+            <div class="form-group"><label>Name</label><input class="f-name" value="${esc(s.name)}" /></div>
+            <div class="form-group"><label>Price</label><input class="f-price" type="number" min="0" value="${esc(s.price)}" /></div>
+            <div class="form-group"><label>Billing</label>
+              <select class="f-period"><option value="mo" ${s.period==='mo'?'selected':''}>per month</option><option value="one-time" ${s.period==='one-time'?'selected':''}>one-time</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Description</label><textarea class="f-desc">${esc(s.description)}</textarea></div>
+          <div class="row-actions">
+            <button class="btn btn-sm btn-outline" data-act="up">↑</button>
+            <button class="btn btn-sm btn-outline" data-act="down">↓</button>
+            <button class="btn btn-sm btn-danger" data-act="del">Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    function collect() {
+      const slug = (n) => n.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'service';
+      const services = [...document.querySelectorAll('.svc')].map((el, i) => ({
+        id: site.services[i]?.id || slug(el.querySelector('.f-name').value),
+        icon: el.querySelector('.f-icon').value.trim(),
+        name: el.querySelector('.f-name').value.trim(),
+        description: el.querySelector('.f-desc').value.trim(),
+        price: Number(el.querySelector('.f-price').value) || 0,
+        period: el.querySelector('.f-period').value
+      })).filter(s => s.name);
+      services.forEach(s => { if (!s.id) s.id = slug(s.name); });
+      return {
+        whatsapp: $('#whatsapp').value.replace(/\D/g, ''),
+        currency: $('#currency').value || '$',
+        stats: { brands: $('#st-brands').value, adSpend: $('#st-adSpend').value, roas: $('#st-roas').value, monitoring: $('#st-monitoring').value },
+        services
+      };
+    }
+
+    async function load() {
+      $('#status').textContent = 'Loading…';
+      try {
+        const j = await api('GET');
+        site = j.data;
+      } catch (e) {
+        // Fallback: read the deployed file (read-only) if the API isn't configured yet
+        site = await (await fetch('/data/site.json?v=' + Date.now())).json();
+        toast('API not configured: ' + e.message + ' (loaded read-only copy)');
+      }
+      render();
+      $('#status').textContent = '';
+    }
+
+    async function login() {
+      sessionStorage.setItem('deephq_pw', $('#pw').value);
+      try {
+        await api('GET');
+        $('#login').style.display = 'none'; $('#app').style.display = 'block';
+        load();
+      } catch (e) {
+        sessionStorage.removeItem('deephq_pw');
+        $('#loginErr').textContent = e.message === 'Unauthorized' ? 'Wrong password.' : 'Error: ' + e.message;
+      }
+    }
+
+    $('#loginBtn').onclick = login;
+    $('#pw').addEventListener('keydown', e => e.key === 'Enter' && login());
+    $('#logout').onclick = () => { sessionStorage.removeItem('deephq_pw'); location.reload(); };
+    $('#reload').onclick = load;
+    $('#addSvc').onclick = () => { site = collect(); site.services.push({ id: '', icon: '⭐', name: 'New Service', description: '', price: 0, period: 'mo' }); render(); };
+    $('#services').addEventListener('click', e => {
+      const b = e.target.closest('button[data-act]'); if (!b) return;
+      const i = +b.closest('.svc').dataset.i; site = collect();
+      if (b.dataset.act === 'del') { if (confirm('Delete this service?')) site.services.splice(i, 1); }
+      if (b.dataset.act === 'up' && i > 0) [site.services[i-1], site.services[i]] = [site.services[i], site.services[i-1]];
+      if (b.dataset.act === 'down' && i < site.services.length - 1) [site.services[i+1], site.services[i]] = [site.services[i], site.services[i+1]];
+      render();
+    });
+    $('#save').onclick = async () => {
+      const data = collect();
+      if (!data.whatsapp) return toast('WhatsApp number is required');
+      $('#save').disabled = true; $('#status').textContent = 'Saving…';
+      try { const j = await api('POST', { data }); site = data; toast(j.message || 'Saved'); $('#status').textContent = 'Saved ✓ — live in ~1 minute after redeploy'; }
+      catch (e) { toast('Save failed: ' + e.message); $('#status').textContent = ''; }
+      $('#save').disabled = false;
+    };
+
+    if (pw()) login();
+  </script>
+</body>
+</html>
