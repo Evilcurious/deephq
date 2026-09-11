@@ -12,12 +12,13 @@ async function loadSite() {
 }
 
 function serviceCard(site, s, withPrice) {
-  return `<div class="card">
+  return `<a class="card card-link" href="/order?service=${encodeURIComponent(s.id)}" title="Order ${esc(s.name)}">
     <div class="icon">${esc(s.icon)}</div>
     <h3>${esc(s.name)}</h3>
     <p>${esc(s.description)}</p>
     ${withPrice ? `<div class="price-tag">${esc(fmtPrice(site, s))}</div>` : ''}
-  </div>`;
+    <span class="card-cta">Order this service →</span>
+  </a>`;
 }
 
 loadSite().then(site => {
@@ -106,3 +107,55 @@ loadSite().then(site => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 });
+
+// ---------- Reviews page ----------
+(function () {
+  const list = document.getElementById('reviewsList');
+  if (!list) return;
+  const summary = document.getElementById('ratingSummary');
+  const stars = (n) => '★'.repeat(n) + '☆'.repeat(5 - n);
+  const initials = (n) => n.split(/\s+/).map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+  function render(reviews) {
+    if (!reviews.length) {
+      list.innerHTML = '<p style="color:var(--muted)">No reviews yet — be the first to share your experience!</p>';
+      return;
+    }
+    const avg = reviews.reduce((a, r) => a + r.rating, 0) / reviews.length;
+    summary.innerHTML = `<strong>${avg.toFixed(1)} <small class="star-gold">${stars(Math.round(avg))}</small></strong><span>${reviews.length} review${reviews.length === 1 ? '' : 's'}</span>`;
+    list.innerHTML = reviews.map(r => `<div class="card">
+      <div class="star-gold" style="font-size:1.1rem;margin-bottom:10px;">${stars(r.rating)}</div>
+      <p class="quote">"${esc(r.text)}"</p>
+      <div class="author"><div class="avatar">${esc(initials(r.name))}</div><div><strong>${esc(r.name)}</strong><small>${esc(r.business || '')}${r.business ? ' · ' : ''}${esc(r.date || '')}</small></div></div>
+    </div>`).join('');
+  }
+
+  async function load() {
+    try {
+      const r = await fetch('/api/reviews', { cache: 'no-store' });
+      if (!r.ok) throw 0;
+      render((await r.json()).reviews || []);
+    } catch {
+      const r = await fetch('/data/reviews.json?v=' + Date.now(), { cache: 'no-store' });
+      render(await r.json());
+    }
+  }
+  load();
+
+  const form = document.getElementById('reviewForm');
+  const note = document.getElementById('reviewNote');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) return form.reportValidity();
+    const btn = form.querySelector('button'); btn.disabled = true; note.textContent = 'Submitting…';
+    try {
+      const r = await fetch('/api/reviews', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.fromEntries(new FormData(form).entries())) });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || 'Failed');
+      note.textContent = 'Thank you! Your review has been published.';
+      form.reset();
+      load();
+    } catch (err) { note.textContent = 'Could not submit: ' + err.message; }
+    btn.disabled = false;
+  });
+})();

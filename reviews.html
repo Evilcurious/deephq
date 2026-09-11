@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reviews — DEEP.HQ</title>
+  <meta name="description" content="What clients say about DEEP.HQ — and leave your own review." />
+  <link rel="icon" href="/assets/logo.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="container nav">
+      <a href="/" class="logo"><img src="/assets/logo.svg" alt="DEEP.HQ logo" /> <span class="wm">DEEP<span class="dot">.</span><span class="hq">HQ</span></span></a>
+      <button class="nav-toggle" aria-label="Toggle menu">☰</button>
+      <ul class="nav-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/services">Services</a></li>
+        <li><a href="/reviews" class="active">Reviews</a></li>
+        <li><a href="/order" class="btn btn-primary" style="padding:10px 22px;">Order Now</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="container">
+      <span class="eyebrow">Reviews</span>
+      <h1>What Our Clients Say</h1>
+      <p>Real feedback from the brands we work with. Worked with us? Share your experience below.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="reviews-head">
+        <div class="rating-summary" id="ratingSummary"><strong>—</strong><span>No reviews yet</span></div>
+        <a href="#write" class="btn btn-primary">Write a Review</a>
+      </div>
+      <div class="grid grid-3" id="reviewsList"><p style="color:var(--muted)">Loading reviews…</p></div>
+    </div>
+  </section>
+
+  <section class="section alt" id="write">
+    <div class="container" style="max-width:720px;">
+      <div class="form-card">
+        <form id="reviewForm" novalidate>
+          <h2>Write a Review</h2>
+          <p>Your review will be published on this page.</p>
+          <div class="form-row">
+            <div class="form-group"><label for="rname">Your Name *</label><input id="rname" name="name" required maxlength="60" placeholder="Jane Doe" /></div>
+            <div class="form-group"><label for="rbusiness">Business / Role</label><input id="rbusiness" name="business" maxlength="80" placeholder="Founder, Brand Co." /></div>
+          </div>
+          <div class="form-group">
+            <label>Rating *</label>
+            <div class="stars" id="stars">
+              <input type="radio" name="rating" value="5" id="s5" required /><label for="s5" title="5 stars">★</label>
+              <input type="radio" name="rating" value="4" id="s4" /><label for="s4" title="4 stars">★</label>
+              <input type="radio" name="rating" value="3" id="s3" /><label for="s3" title="3 stars">★</label>
+              <input type="radio" name="rating" value="2" id="s2" /><label for="s2" title="2 stars">★</label>
+              <input type="radio" name="rating" value="1" id="s1" /><label for="s1" title="1 star">★</label>
+            </div>
+          </div>
+          <div class="form-group"><label for="rtext">Your Review *</label><textarea id="rtext" name="text" required maxlength="600" placeholder="Tell others about your experience with DEEP.HQ…"></textarea></div>
+          <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+          <button type="submit" class="btn btn-primary btn-block">Submit Review</button>
+          <p class="form-note" id="reviewNote"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="/" class="logo"><img src="/assets/logo.svg" alt="DEEP.HQ logo" /> <span class="wm">DEEP<span class="dot">.</span><span class="hq">HQ</span></span></a>
+          <p>AI-powered digital marketing agency specializing in social media management and Meta Ads.</p>
+        </div>
+        <div>
+          <h4>Pages</h4>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/services">Services</a></li>
+            <li><a href="/reviews">Reviews</a></li>
+            <li><a href="/order">Order</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <ul>
+            <li>hello@deephq.agency</li>
+            <li><a data-wa="text" href="https://wa.me/923296976009" target="_blank">+923296976009</a> (WhatsApp)</li>
+            <li>Mon–Fri, 9am–6pm</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">© 2026 DEEP.HQ. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -22,10 +22,17 @@ Set these **Environment Variables** in Vercel → Project → Settings → Envir
 
 | Variable | Value |
 |---|---|
-| `ADMIN_PASSWORD` | your admin password |
+| `ADMIN_PASSWORD` | admin password (defaults to `evil123` if not set — change it in production) |
 | `GITHUB_TOKEN` | GitHub fine-grained token with *Contents: Read and write* on this repo |
 | `GITHUB_REPO` | `Evilcurious/deephq` |
 | `GITHUB_BRANCH` | branch Vercel deploys from (e.g. `main`) |
 
 ## Orders
 The order form opens WhatsApp (number set in admin) with the order details pre-filled.
+
+## Reviews
+`/reviews` — public page where anyone can post a review (saved to `data/reviews.json` via `/api/reviews`).
+Admins can delete reviews from `/admin`.
+
+## Services → Order
+Clicking a service card on Home/Services opens `/order?service=<id>` with that service pre-selected.

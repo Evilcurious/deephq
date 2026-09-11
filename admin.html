@@ -68,6 +68,11 @@
         <div id="services"></div>
       </div>
 
+      <div class="panel">
+        <h2>Reviews <button class="btn btn-outline btn-sm" id="reloadReviews">Refresh</button></h2>
+        <div id="reviewsAdmin" style="color:var(--muted)">Loading…</div>
+      </div>
+
       <div class="save-bar">
         <span id="status" style="align-self:center;color:var(--muted);font-size:.9rem;margin-right:auto;"></span>
         <button class="btn btn-outline" id="reload">Discard changes</button>
@@ -80,12 +85,13 @@
   <script>
     const $ = (s) => document.querySelector(s);
     let site = null;
+    let load;
     const pw = () => sessionStorage.getItem('deephq_pw') || '';
     const toast = (m) => { const t = $('#toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3500); };
     const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-    async function api(method, body) {
-      const r = await fetch('/api/admin', { method, headers: { 'x-admin-password': pw(), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    async function api(method, body, url = '/api/admin') {
+      const r = await fetch(url, { method, headers: { 'x-admin-password': pw(), 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error || r.statusText);
       return j;
@@ -133,7 +139,7 @@
       };
     }
 
-    async function load() {
+    load = async function () {
       $('#status').textContent = 'Loading…';
       try {
         const j = await api('GET');
@@ -145,7 +151,7 @@
       }
       render();
       $('#status').textContent = '';
-    }
+    };
 
     async function login() {
       sessionStorage.setItem('deephq_pw', $('#pw').value);
@@ -180,6 +186,27 @@
       catch (e) { toast('Save failed: ' + e.message); $('#status').textContent = ''; }
       $('#save').disabled = false;
     };
+
+    // ----- Reviews management -----
+    async function loadReviews() {
+      const box = $('#reviewsAdmin'); box.textContent = 'Loading…';
+      try {
+        const r = await fetch('/api/reviews', { cache: 'no-store' }); const j = await r.json();
+        const list = j.reviews || [];
+        box.innerHTML = list.length ? list.map(rv => `
+          <div class="svc" style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start;">
+            <div><strong>${esc(rv.name)}</strong> <span style="color:#f5b400">${'★'.repeat(rv.rating)}</span> <small style="color:var(--muted)">${esc(rv.business||'')} · ${esc(rv.date||'')}</small><p style="margin-top:6px;color:var(--text)">${esc(rv.text)}</p></div>
+            <button class="btn btn-sm btn-danger" data-del="${esc(rv.id)}">Delete</button>
+          </div>`).join('') : 'No reviews yet.';
+      } catch (e) { box.textContent = 'Could not load reviews: ' + e.message; }
+    }
+    $('#reloadReviews').onclick = loadReviews;
+    $('#reviewsAdmin').addEventListener('click', async e => {
+      const b = e.target.closest('[data-del]'); if (!b || !confirm('Delete this review?')) return;
+      try { await api('DELETE', undefined, '/api/reviews?id=' + encodeURIComponent(b.dataset.del)); toast('Review deleted'); loadReviews(); }
+      catch (err) { toast('Delete failed: ' + err.message); }
+    });
+    const _load = load; load = async function () { await _load(); loadReviews(); };
 
     if (pw()) login();
   </script>
