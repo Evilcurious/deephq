@@ -1,17 +1,13 @@
 // GET  /api/admin -> site settings (password: x-admin-password header)
 // POST /api/admin -> save settings
-const { readJson, writeJson, isAdmin, connected } = require('../lib/store');
+const { readJson, writeJson, isAdmin, connected, diagnostics } = require('../lib/store');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (!isAdmin(req)) return res.status(401).json({ error: 'Wrong password' });
   try {
     if (req.method === 'GET') {
-      const tokenKeys = Object.keys(process.env).filter(k => k.endsWith('_READ_WRITE_TOKEN'));
-      return res.status(200).json({
-        data: await readJson('site.json'), storage: connected(),
-        diag: { env: process.env.VERCEL_ENV || 'local', branch: process.env.VERCEL_GIT_COMMIT_REF || '', tokenKeys }
-      });
+      return res.status(200).json({ data: await readJson('site.json'), storage: connected(), diag: diagnostics() });
     }
     if (req.method === 'POST') {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
