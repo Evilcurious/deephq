@@ -1,18 +1,18 @@
 :root {
-  --blue-900: #0a1a3a;
-  --blue-800: #0f2a5c;
-  --blue-700: #1240a0;
-  --blue-600: #1a5cff;
-  --blue-500: #2f7bff;
-  --blue-400: #5c9dff;
-  --blue-100: #e6f0ff;
-  --blue-50: #f3f7ff;
+  --blue-900: #030a1c;
+  --blue-800: #071a45;
+  --blue-700: #0b4fd6;
+  --blue-600: #0a8cff;
+  --blue-500: #1e9bff;
+  --blue-400: #4fc3ff;
+  --blue-100: #e3f2ff;
+  --blue-50: #f2f8ff;
   --white: #ffffff;
   --text: #16213a;
   --muted: #5b6b85;
   --border: #dbe6fb;
   --radius: 14px;
-  --shadow: 0 10px 30px rgba(18, 64, 160, 0.12);
+  --shadow: 0 10px 30px rgba(10, 140, 255, 0.15);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -55,7 +55,7 @@ img { max-width: 100%; display: block; }
   padding: 13px 26px; border-radius: 999px; font-weight: 600; font-size: .95rem;
   border: 2px solid transparent; cursor: pointer; transition: all .2s;
 }
-.btn-primary { background: var(--blue-600); color: var(--white); box-shadow: 0 8px 20px rgba(26,92,255,.3); }
+.btn-primary { background: var(--blue-600); color: var(--white); box-shadow: 0 8px 20px rgba(10,140,255,.35); }
 .btn-primary:hover { background: var(--blue-700); transform: translateY(-2px); }
 .btn-outline { border-color: var(--blue-600); color: var(--blue-600); background: transparent; }
 .btn-outline:hover { background: var(--blue-100); }
@@ -179,7 +179,7 @@ input, select, textarea {
   width: 100%; padding: 13px 16px; border: 1.5px solid var(--border); border-radius: 10px;
   font: inherit; color: var(--text); background: var(--blue-50); transition: border .2s, box-shadow .2s;
 }
-input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue-600); box-shadow: 0 0 0 4px rgba(26,92,255,.12); background: var(--white); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--blue-600); box-shadow: 0 0 0 4px rgba(10,140,255,.15); background: var(--white); }
 textarea { min-height: 120px; resize: vertical; }
 .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .check { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: .93rem; font-weight: 500; transition: all .2s; background: var(--white); }
@@ -233,3 +233,11 @@ textarea { min-height: 120px; resize: vertical; }
   .form-card { padding: 26px; }
   .cta { padding: 44px 22px; }
 }
+
+/* Wordmark */
+.logo .wm { font-weight: 800; letter-spacing: .02em; }
+.logo .wm .dot { color: var(--blue-600); }
+.logo .wm .hq { color: var(--blue-600); }
+.footer .logo .wm, .hero .logo .wm { color: #fff; }
+.header .logo .wm { color: var(--blue-900); }
+.logo img { height: 44px; width: 44px; border-radius: 10px; }
