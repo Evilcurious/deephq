@@ -22,7 +22,9 @@ Visit `/admin` — password **evil123** (override with the `ADMIN_PASSWORD` env 
 Edit services (name, description, price), home-page stats, WhatsApp number, and delete reviews.
 
 Saved data is stored in **Vercel Blob**. One-time setup: Vercel project → **Storage** → **Create Database** → **Blob** → **Connect** → Redeploy.
-No tokens or database to manage. Until connected, the site serves the defaults in `data/*.json`.
+Stores connected this way use **OIDC**: Vercel injects `BLOB_STORE_ID` and attaches a short-lived identity token to each request, so there is no token to copy or rotate.
+Stores connected with a **read-write token** (`BLOB_READ_WRITE_TOKEN`, including custom-prefixed variants) keep working too — either setup needs no extra configuration.
+Until connected, the site serves the defaults in `data/*.json`.
 
 ## Orders
 The order form opens WhatsApp (number set in admin) with the order details pre-filled.

@@ -150,9 +150,9 @@
         if (!j.storage && j.diag) {
           const d = j.diag;
           let hint = `This deployment is <b>${d.env}</b>` + (d.branch ? ` (branch <b>${d.branch}</b>)` : '') + `. `;
-          hint += d.tokenKeys.length ? `Found token var <b>${d.tokenKeys.join(', ')}</b> but it is empty/invalid.` :
+          hint += d.tokenKeys.length ? `Found Blob env var <b>${d.tokenKeys.join(', ')}</b> but it is empty/invalid.` :
             d.env === 'preview' ? `The Blob store is not enabled for the <b>Preview</b> environment. In Vercel: Storage → your store → Connect Project → tick <b>Preview</b> (and Production) → then Redeploy. Or merge the PR so the site runs on Production.` :
-            `No <code>*_READ_WRITE_TOKEN</code> variable exists in this environment. In Vercel: Storage → your store → <b>Connect Project</b> → select deephq + all environments → Redeploy.`;
+            `No Blob credentials exist in this environment. Newly connected stores use OIDC (<code>BLOB_STORE_ID</code>); older ones use a read-write token (<code>*_READ_WRITE_TOKEN</code>). In Vercel: Storage → your store → <b>Connect Project</b> → select deephq + all environments → Redeploy.`;
           $('#diag').innerHTML = hint;
         }
       } catch (e) { toast('Load failed: ' + e.message); }
